@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +10,9 @@ import { EnrollmentModule } from './enrollment/enrollment.module';
 import { Enrollment } from './enrollment/enrollment.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NoteModule } from './note/note.module';
+import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { TransformInterceptor } from './transform.interceptor';
+import { HttpExceptionFilter } from './http-exception.filter';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -26,10 +29,22 @@ import { NoteModule } from './note/note.module';
     CourseModule,
     EnrollmentModule,
     NoteModule,
-    MongooseModule.forRoot('mongodb://hoangvt:dobiet@localhost:27019'), 
+    MongooseModule.forRoot('mongodb://hoangvt:d0biet@localhost:27019'), 
 
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,{
+    provide: APP_PIPE,
+      useClass: ValidationPipe,
+  },
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: TransformInterceptor,
+  },
+  {
+    provide: APP_FILTER,
+    useClass: HttpExceptionFilter,
+  },
+  ],
 })
 export class AppModule {}

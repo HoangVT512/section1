@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Schema()
 export class Note {
-  @Prop()
-  studentId: number;
+  @Prop({ type: Types.ObjectId, ref: 'Student' })
+  studentId: Types.ObjectId;
 
   @Prop()
   content: string;
